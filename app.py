@@ -27,3 +27,4 @@ if submit:
     result = "⚠️ Fraudulent Transaction" if prediction[0] == 1 else "✅ Legitimate Transaction"
     st.success(result)
 
+
