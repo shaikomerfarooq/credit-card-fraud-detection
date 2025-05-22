@@ -1,30 +1,29 @@
 import streamlit as st
-import pickle
 import numpy as np
+import pickle
 
-# Load the trained model
-with open("fraud_model.pkl", "rb") as f:
-    model = pickle.load(f)
+# Load the model
+model = pickle.load(open('fraud_model.pkl', 'rb'))
 
 st.set_page_config(page_title="Credit Card Fraud Detection", layout="centered")
-
 st.title("💳 Credit Card Fraud Detection App")
-st.write("Enter transaction details to check if it's fraudulent.")
+st.write("Enter transaction details below and check if it's fraudulent.")
 
-# List of input features (excluding 'Time' & 'Class')
-features = [f'V{i}' for i in range(1, 29)] + ['Amount']
+# Create a form to collect inputs
+with st.form(key="input_form"):
+    v_features = []
+    for i in range(1, 29):  # V1 to V28
+        v = st.number_input(f"V{i}", step=0.01)
+        v_features.append(v)
 
-user_input = []
+    amount = st.number_input("Transaction Amount", step=0.01)
+    v_features.append(amount)
 
-for feature in features:
-    value = st.number_input(f"{feature}", value=0.0, format="%.4f")
-    user_input.append(value)
+    submit = st.form_submit_button("🔍 Predict Fraud")
 
-if st.button("Predict"):
-    input_array = np.array(user_input).reshape(1, -1)
-    prediction = model.predict(input_array)
+if submit:
+    input_data = np.array([v_features])
+    prediction = model.predict(input_data)
+    result = "⚠️ Fraudulent Transaction" if prediction[0] == 1 else "✅ Legitimate Transaction"
+    st.success(result)
 
-    if prediction[0] == 1:
-        st.error("⚠️ Warning: Fraudulent Transaction Detected!")
-    else:
-        st.success("✅ Legitimate Transaction.")
