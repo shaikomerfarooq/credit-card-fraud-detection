@@ -1,83 +1,80 @@
 import streamlit as st
+import pandas as pd
 import numpy as np
 import pickle
 import joblib
 import matplotlib.pyplot as plt
-from sklearn.metrics import confusion_matrix, roc_curve, auc, precision_recall_curve
+import seaborn as sns
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 
-# Load model and test data
+# --- Sidebar ---
+st.sidebar.title("🧠 About This Project")
+st.sidebar.info("""
+This project detects fraudulent credit card transactions using the XGBoost algorithm.
+
+Built by **Shaik Omer Farooq** — a passionate learner transitioning from a non-IT to IT background!
+
+📊 Data Source: [Kaggle Credit Card Fraud Dataset](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud)
+""")
+
+# --- Title ---
+st.title("💳 Credit Card Fraud Detection with XGBoost")
+
+# --- Load Model and Data ---
 model = pickle.load(open('fraud_model.pkl', 'rb'))
 X_test = joblib.load(open('X_test.pkl', 'rb'))
 y_test = joblib.load(open('y_test.pkl', 'rb'))
 
-st.set_page_config(page_title="Credit Card Fraud Detection", layout="centered")
-st.title("💳 Credit Card Fraud Detection with XGBoost")
+# --- Section 1: Prediction ---
+st.header("🔍 Predict Fraudulent Transactions")
 
-st.write("Enter transaction details below to check if it's fraudulent.")
+# For demo purposes, we use a random row from X_test
+sample_index = st.number_input("Choose a test sample index:", min_value=0, max_value=len(X_test)-1, step=1)
+sample = X_test.iloc[sample_index:sample_index+1]
 
-# --- Input Form ---
-with st.form(key="input_form"):
-    v_features = [st.number_input(f"V{i}", step=0.01) for i in range(1, 29)]
-    amount = st.number_input("Transaction Amount", step=0.01)
-    v_features.append(amount)
-    submit = st.form_submit_button("🔍 Predict Fraud")
-
-# --- Prediction ---
-if submit:
-    input_data = np.array([v_features])
-    prediction = model.predict(input_data)
-    result = "⚠️ Fraudulent Transaction" if prediction[0] == 1 else "✅ Legitimate Transaction"
+if st.button("🔎 Predict"):
+    prediction = model.predict(sample)[0]
+    result = "✅ Legit Transaction" if prediction == 0 else "⚠️ Fraudulent Transaction"
+    st.subheader("Prediction Result:")
     st.success(result)
 
-# --- Feature Importance ---
-st.subheader("🔎 Feature Importance")
-# Dynamically generate feature names matching model input size
-features = [f"Feature {i}" for i in range(len(model.feature_importances_))]
+# --- Section 2: Model Evaluation ---
+st.header("📊 Model Evaluation Metrics")
 
-if hasattr(model, "feature_importances_"):
-    importances = model.feature_importances_
-    fig, ax = plt.subplots(figsize=(10, 6))
-    ax.barh(features, importances, color="skyblue")
-    ax.set_xlabel("Importance")
-    ax.set_title("Feature Importance")
-    st.pyplot(fig)
-
-# --- Model Performance ---
-st.subheader("📊 Model Evaluation on Test Data")
-
-# Confusion Matrix
-st.markdown("### Confusion Matrix")
 y_pred = model.predict(X_test)
-cm = confusion_matrix(y_test, y_pred)
-fig, ax = plt.subplots()
-ax.matshow(cm, cmap='Blues', alpha=0.7)
-for i in range(cm.shape[0]):
-    for j in range(cm.shape[1]):
-        ax.text(x=j, y=i, s=cm[i, j], va='center', ha='center')
-st.pyplot(fig)
+col1, col2 = st.columns(2)
 
-# ROC Curve
-st.markdown("### ROC Curve")
-y_probs = model.predict_proba(X_test)[:, 1]
-fpr, tpr, _ = roc_curve(y_test, y_probs)
-roc_auc = auc(fpr, tpr)
-fig, ax = plt.subplots()
-ax.plot(fpr, tpr, label=f"AUC = {roc_auc:.2f}")
-ax.plot([0, 1], [0, 1], linestyle='--')
-ax.set_xlabel("False Positive Rate")
-ax.set_ylabel("True Positive Rate")
-ax.set_title("Receiver Operating Characteristic")
-ax.legend()
-st.pyplot(fig)
+with col1:
+    st.metric("🎯 Accuracy", f"{accuracy_score(y_test, y_pred)*100:.2f}%")
 
-# Precision-Recall Curve
-st.markdown("### Precision-Recall Curve")
-precision, recall, _ = precision_recall_curve(y_test, y_probs)
-fig, ax = plt.subplots()
-ax.plot(recall, precision, color='green')
-ax.set_xlabel("Recall")
-ax.set_ylabel("Precision")
-ax.set_title("Precision-Recall Curve")
-st.pyplot(fig)
+with st.expander("📋 Classification Report"):
+    st.text(classification_report(y_test, y_pred))
+
+with st.expander("📉 Confusion Matrix"):
+    cm = confusion_matrix(y_test, y_pred)
+    fig_cm, ax_cm = plt.subplots()
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax_cm)
+    st.pyplot(fig_cm)
+
+# --- Section 3: Feature Importance ---
+st.header("🧠 Feature Importance (Top 10)")
+
+try:
+    importances = model.feature_importances_
+    features = X_test.columns
+    importance_df = pd.DataFrame({'Feature': features, 'Importance': importances})
+    top_features = importance_df.sort_values(by='Importance', ascending=False).head(10)
+
+    fig_imp, ax_imp = plt.subplots()
+    ax_imp.barh(top_features['Feature'], top_features['Importance'], color="skyblue")
+    ax_imp.set_xlabel("Importance Score")
+    ax_imp.set_title("Top 10 Important Features")
+    st.pyplot(fig_imp)
+except AttributeError:
+    st.warning("Feature importance is not available for this model.")
+
+# --- Footer ---
+st.markdown("---")
+st.markdown("Made with ❤️ by [Shaik Omer Farooq](https://github.com/YOUR_GITHUB_USERNAME)")
 
 
