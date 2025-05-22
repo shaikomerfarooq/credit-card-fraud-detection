@@ -11,7 +11,8 @@ X_test = joblib.load(open('X_test.pkl', 'rb'))
 y_test = joblib.load(open('y_test.pkl', 'rb'))
 
 st.set_page_config(page_title="Credit Card Fraud Detection", layout="centered")
-st.title("💳 Credit Card Fraud Detection App")
+st.title("💳 Credit Card Fraud Detection with XGBoost")
+
 st.write("Enter transaction details below to check if it's fraudulent.")
 
 # --- Input Form ---
