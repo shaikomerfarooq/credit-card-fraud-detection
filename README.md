@@ -1,15 +1,53 @@
-# 💳 Credit Card Fraud Detection App
+# 💳 Credit Card Fraud Detection with XGBoost
 
-A web app that detects fraudulent credit card transactions using machine learning models such as Random Forest and XGBoost. Built with Python and Streamlit.
+A Streamlit web app that detects fraudulent credit card transactions using machine learning.
+
+---
+
+### 🔗 Live App:
+👉 [Click to View the Web App](https://credit-card-fraud-detection-qcfwhxuekhcexlyunennmx.streamlit.app/)
+
+---
+
+## 📊 Project Overview
+
+- **Goal:** Identify fraudulent transactions from anonymized credit card data.
+- **Dataset:** [Kaggle Credit Card Fraud Dataset](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud)
+- **Tech Stack:** Python, Streamlit, XGBoost, scikit-learn, SMOTE, matplotlib
 
 ---
 
 ## 🚀 Features
 
-- Predicts fraudulent vs. legitimate transactions
-- Trained on imbalanced dataset using SMOTE
-- Clean and easy-to-use web interface (Streamlit)
-- Deployed via Streamlit Cloud
+- ✅ Clean, modern Streamlit UI
+- 🧠 Feature importance visualization
+- 🔁 Models used: Random Forest, XGBoost
+- 📈 ROC and Precision-Recall curves
+- 🧪 Trained and tested using SMOTE to handle imbalance
+- 💾 Deployed via Streamlit Cloud
+
+---
+
+## 📂 Project Structure
+
+├── app.py # Streamlit app code
+├── fraud_model.pkl # Trained XGBoost model
+├── X_test.pkl # Test feature set
+├── y_test.pkl # Test labels
+├── requirements.txt # All dependencies
+└── README.md # Project overview
+
+
+---
+
+## 🛠️ How to Run Locally
+
+```bash
+git clone https://github.com/ShaikOmerFarooq/credit-card-fraud-detection.git
+cd credit-card-fraud-detection
+pip install -r requirements.txt
+streamlit run app.py
+
 
 ---
 
@@ -43,7 +81,19 @@ A web app that detects fraudulent credit card transactions using machine learnin
 
 ---
 
-## ✨ Author
+⭐ If you like this project
+Give it a ⭐ on GitHub and share it with others!
 
-**Shaik Omer Farooq**  
-Data Analyst | ML Enthusiast | Streamlit Developer
+
+---
+
+### 🔹 **STEP 4: Scroll to the Bottom**
+- Select: ✅ **Commit directly to the main branch**
+- Click: **`Commit changes`**
+
+---
+
+🙋‍♂️ About Me
+Hi, I’m Shaik Omer Farooq — a passionate learner transitioning from a non-IT background into the world of Data Science and Machine Learning.
+
+📫 Connect with me on LinkedIn (https://www.linkedin.com/in/omer-farooq-256101353/)
