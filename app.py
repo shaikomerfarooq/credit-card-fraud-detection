@@ -30,7 +30,9 @@ if submit:
 
 # --- Feature Importance ---
 st.subheader("🔎 Feature Importance")
-features = [f"V{i}" for i in range(1, 29)] + ["Amount"]
+# Dynamically generate feature names matching model input size
+features = [f"Feature {i}" for i in range(len(model.feature_importances_))]
+
 if hasattr(model, "feature_importances_"):
     importances = model.feature_importances_
     fig, ax = plt.subplots(figsize=(10, 6))
